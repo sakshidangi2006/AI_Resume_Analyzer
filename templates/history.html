@@ -19,7 +19,6 @@
                 <button type="submit" class="btn-delete">🗑 Delete</button>
             </form>
         </div>
-
         <p class="resume-preview">{{ r.resume_text[:200] }}...</p>
 
         <hr>
@@ -28,41 +27,96 @@
             <p class="error-msg">⚠️ Error: {{ r.result.error }}</p>
         {% endif %}
 
+        <!-- SCORES -->
+        {% if r.result.resume_score is defined or r.result.ats_score is defined %}
+        <div class="score-grid score-grid-compact">
+            <div class="score-card">
+                <div class="score-label">Resume Score</div>
+                <div class="score-circle {% if r.result.resume_score >= 75 %}score-green{% elif r.result.resume_score >= 50 %}score-yellow{% else %}score-red{% endif %}">
+                    {{ r.result.resume_score }}<span class="score-denom">/100</span>
+                </div>
+                <div class="score-bar-wrap">
+                    <div class="score-bar {% if r.result.resume_score >= 75 %}bar-green{% elif r.result.resume_score >= 50 %}bar-yellow{% else %}bar-red{% endif %}"
+                         style="width: {{ r.result.resume_score }}%"></div>
+                </div>
+            </div>
+            <div class="score-card">
+                <div class="score-label">ATS Compatibility</div>
+                <div class="score-circle {% if r.result.ats_score >= 75 %}score-green{% elif r.result.ats_score >= 50 %}score-yellow{% else %}score-red{% endif %}">
+                    {{ r.result.ats_score }}<span class="score-denom">/100</span>
+                </div>
+                <div class="score-bar-wrap">
+                    <div class="score-bar {% if r.result.ats_score >= 75 %}bar-green{% elif r.result.ats_score >= 50 %}bar-yellow{% else %}bar-red{% endif %}"
+                         style="width: {{ r.result.ats_score }}%"></div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- STRENGTHS & WEAKNESSES -->
+        {% if r.result.strengths or r.result.weaknesses %}
+        <div class="sw-grid">
+            {% if r.result.strengths %}
+            <div class="sw-card sw-strength">
+                <h3>💪 Strengths</h3>
+                <ul>{% for s in r.result.get("strengths", []) %}<li>{{ s }}</li>{% endfor %}</ul>
+            </div>
+            {% endif %}
+            {% if r.result.weaknesses %}
+            <div class="sw-card sw-weakness">
+                <h3>⚠️ Weaknesses</h3>
+                <ul>{% for s in r.result.get("weaknesses", []) %}<li>{{ s }}</li>{% endfor %}</ul>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- KEYWORDS -->
+        {% if r.result.keyword_matches or r.result.keyword_gaps %}
+        <h3>🔑 Keyword Matching</h3>
+        {% if r.result.keyword_matches %}
+        <p class="kw-section-label kw-match-label">✅ Matched</p>
+        <div class="keyword-chips">
+            {% for k in r.result.get("keyword_matches", []) %}<span class="chip chip-match">{{ k }}</span>{% endfor %}
+        </div>
+        {% endif %}
+        {% if r.result.keyword_gaps %}
+        <p class="kw-section-label kw-gap-label" style="margin-top:10px;">❌ Missing</p>
+        <div class="keyword-chips">
+            {% for k in r.result.get("keyword_gaps", []) %}<span class="chip chip-gap">{{ k }}</span>{% endfor %}
+        </div>
+        {% endif %}
+        {% endif %}
+
+        <!-- IMPROVEMENT SUGGESTIONS -->
+        {% if r.result.improvement_suggestions %}
+        <h3 style="margin-top:16px;">🛠️ Improvement Suggestions</h3>
+        <ol class="suggestion-list">
+            {% for s in r.result.get("improvement_suggestions", []) %}<li>{{ s }}</li>{% endfor %}
+        </ol>
+        {% endif %}
+
+        <!-- SKILLS -->
         {% if r.result.skills %}
-        <h3>✅ Relevant Skills</h3>
-        <ul>
-            {% for s in r.result.get("skills", []) %}
-            <li>{{ s }}</li>
-            {% endfor %}
-        </ul>
+        <h3 style="margin-top:16px;">✅ Relevant Skills</h3>
+        <ul>{% for s in r.result.get("skills", []) %}<li>{{ s }}</li>{% endfor %}</ul>
         {% endif %}
 
         {% if r.result.missing_skills %}
-        <h3>❌ Missing Skills</h3>
-        <ul>
-            {% for s in r.result.get("missing_skills", []) %}
-            <li>{{ s }}</li>
-            {% endfor %}
-        </ul>
+        <h3 style="margin-top:16px;">❌ Missing Skills</h3>
+        <ul>{% for s in r.result.get("missing_skills", []) %}<li>{{ s }}</li>{% endfor %}</ul>
         {% endif %}
 
         {% if r.result.roadmap %}
-        <h3>🗺️ Roadmap</h3>
-        <ul>
-            {% for s in r.result.get("roadmap", []) %}
-            <li>{{ s }}</li>
-            {% endfor %}
-        </ul>
+        <h3 style="margin-top:16px;">🗺️ Roadmap</h3>
+        <ol>{% for s in r.result.get("roadmap", []) %}<li>{{ s }}</li>{% endfor %}</ol>
         {% endif %}
 
         {% if r.result.interview_questions %}
-        <h3>🎤 Interview Questions</h3>
-        <ul>
-            {% for s in r.result.get("interview_questions", []) %}
-            <li>{{ s }}</li>
-            {% endfor %}
-        </ul>
+        <h3 style="margin-top:16px;">🎤 Interview Questions</h3>
+        <ol>{% for s in r.result.get("interview_questions", []) %}<li>{{ s }}</li>{% endfor %}</ol>
         {% endif %}
+
     </div>
     {% endfor %}
 {% else %}

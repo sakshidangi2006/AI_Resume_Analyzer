@@ -266,6 +266,154 @@ hr {
     margin-bottom: 14px;
 }
 
+/* ===== SCORE GRID ===== */
+.score-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.score-card {
+    background: white;
+    border-radius: 14px;
+    padding: 24px 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+    text-align: center;
+}
+
+.score-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+}
+
+.score-circle {
+    font-size: 40px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 14px;
+}
+
+.score-denom {
+    font-size: 16px;
+    font-weight: 500;
+    color: #9ca3af;
+}
+
+.score-green { color: #16a34a; }
+.score-yellow { color: #d97706; }
+.score-red { color: #dc2626; }
+
+.score-bar-wrap {
+    height: 8px;
+    background: #f3f4f6;
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.score-bar {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.6s ease;
+}
+
+.bar-green { background: #16a34a; }
+.bar-yellow { background: #d97706; }
+.bar-red { background: #dc2626; }
+
+/* ===== STRENGTHS & WEAKNESSES GRID ===== */
+.sw-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.sw-card {
+    background: white;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+}
+
+.sw-strength {
+    border-top: 3px solid #16a34a;
+}
+
+.sw-weakness {
+    border-top: 3px solid #d97706;
+}
+
+.sw-card h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+
+/* ===== KEYWORD CHIPS ===== */
+.keyword-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.chip {
+    font-size: 13px;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 99px;
+    display: inline-block;
+}
+
+.chip-match {
+    background: #dcfce7;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+}
+
+.chip-gap {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+
+.kw-section-label {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0 0 6px 0;
+}
+
+.kw-match-label { color: #15803d; }
+.kw-gap-label { color: #b91c1c; }
+
+/* ===== SUGGESTION & ROADMAP LISTS ===== */
+.suggestion-list li,
+.roadmap-list li {
+    margin-bottom: 10px;
+    line-height: 1.6;
+    padding-left: 4px;
+}
+
+/* ===== OPTIONAL TAG ===== */
+.optional-tag {
+    font-size: 12px;
+    color: #9ca3af;
+    font-weight: 400;
+    margin-left: 6px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+    .score-grid,
+    .sw-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* ===== HISTORY PAGE ===== */
 .history-header {
     display: flex;

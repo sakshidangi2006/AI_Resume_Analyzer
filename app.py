@@ -4,7 +4,6 @@ import models
 import PyPDF2
 import docx
 import json
-import os
 from ai import analyze_resume
 
 app = Flask(__name__)
@@ -89,9 +88,11 @@ def dashboard():
                 except Exception as err:
                     result = {"error": f"Docx error: {str(err)}"}
 
+        job_description = request.form.get("job_description", "")
+
         if resume_text and user_goal and result is None:
             try:
-                result = analyze_resume(resume_text, user_goal)
+                result = analyze_resume(resume_text, user_goal, job_description)
                 db = SessionLocal()
                 user = db.query(models.User).filter_by(email=session["user"]).first()
                 report = models.Reports(
@@ -157,6 +158,4 @@ def logout():
     return redirect("/login")
 
 if __name__ == "__main__":
-    app.run(debug=True,
-            host="0.0.0.0",
-            port=int(os.environ.get("PORT", 8080)))
+    app.run(debug=True)

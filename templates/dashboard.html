@@ -10,52 +10,158 @@
         <label style="margin-top:14px; display:block;">Or upload a file (.pdf or .docx):</label>
         <input type="file" name="file" accept=".pdf,.docx">
 
-        <input name="role" placeholder="What role do you want? (e.g. Backend Developer)" required>
+        <label style="margin-top:14px; display:block;">Target role:</label>
+        <input name="role" placeholder="e.g. Backend Developer, Data Scientist..." required>
+
+        <label style="margin-top:14px; display:block;">Job Description <span class="optional-tag">optional — enables keyword matching</span></label>
+        <textarea name="job_description" placeholder="Paste the job description here for ATS keyword analysis..."></textarea>
+
         <button type="submit">🔍 Analyze Resume</button>
     </form>
 </div>
 
 {% if result %}
-<div class="card result-card">
+<div class="result-card">
+
     {% if result.error %}
+    <div class="card">
         <p class="error-msg">⚠️ Error: {{ result.error }}</p>
+    </div>
     {% endif %}
 
-    {% if result.skills %}
-    <h3>✅ Your Relevant Skills</h3>
-    <ul>
-        {% for s in result.get("skills", []) %}
-        <li>{{ s }}</li>
-        {% endfor %}
-    </ul>
+    <!-- SCORE CARDS -->
+    {% if result.resume_score is defined or result.ats_score is defined %}
+    <div class="score-grid">
+        <div class="score-card">
+            <div class="score-label">Resume Score</div>
+            <div class="score-circle {% if result.resume_score >= 75 %}score-green{% elif result.resume_score >= 50 %}score-yellow{% else %}score-red{% endif %}">
+                {{ result.resume_score }}<span class="score-denom">/100</span>
+            </div>
+            <div class="score-bar-wrap">
+                <div class="score-bar {% if result.resume_score >= 75 %}bar-green{% elif result.resume_score >= 50 %}bar-yellow{% else %}bar-red{% endif %}"
+                     style="width: {{ result.resume_score }}%"></div>
+            </div>
+        </div>
+        <div class="score-card">
+            <div class="score-label">ATS Compatibility</div>
+            <div class="score-circle {% if result.ats_score >= 75 %}score-green{% elif result.ats_score >= 50 %}score-yellow{% else %}score-red{% endif %}">
+                {{ result.ats_score }}<span class="score-denom">/100</span>
+            </div>
+            <div class="score-bar-wrap">
+                <div class="score-bar {% if result.ats_score >= 75 %}bar-green{% elif result.ats_score >= 50 %}bar-yellow{% else %}bar-red{% endif %}"
+                     style="width: {{ result.ats_score }}%"></div>
+            </div>
+        </div>
+    </div>
     {% endif %}
 
-    {% if result.missing_skills %}
-    <h3>❌ Missing Skills</h3>
-    <ul>
-        {% for s in result.get("missing_skills", []) %}
-        <li>{{ s }}</li>
-        {% endfor %}
-    </ul>
+    <!-- STRENGTHS & WEAKNESSES -->
+    {% if result.strengths or result.weaknesses %}
+    <div class="sw-grid">
+        {% if result.strengths %}
+        <div class="card sw-card sw-strength">
+            <h3>💪 Strengths</h3>
+            <ul>
+                {% for s in result.get("strengths", []) %}
+                <li>{{ s }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        {% if result.weaknesses %}
+        <div class="card sw-card sw-weakness">
+            <h3>⚠️ Weaknesses</h3>
+            <ul>
+                {% for s in result.get("weaknesses", []) %}
+                <li>{{ s }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
     {% endif %}
 
+    <!-- KEYWORD MATCHING -->
+    {% if result.keyword_matches or result.keyword_gaps %}
+    <div class="card">
+        <h3>🔑 Keyword Matching</h3>
+        {% if result.keyword_matches %}
+        <p class="kw-section-label kw-match-label">✅ Matched Keywords</p>
+        <div class="keyword-chips">
+            {% for k in result.get("keyword_matches", []) %}
+            <span class="chip chip-match">{{ k }}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% if result.keyword_gaps %}
+        <p class="kw-section-label kw-gap-label" style="margin-top:14px;">❌ Missing Keywords</p>
+        <div class="keyword-chips">
+            {% for k in result.get("keyword_gaps", []) %}
+            <span class="chip chip-gap">{{ k }}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- IMPROVEMENT SUGGESTIONS -->
+    {% if result.improvement_suggestions %}
+    <div class="card">
+        <h3>🛠️ Improvement Suggestions</h3>
+        <ol class="suggestion-list">
+            {% for s in result.get("improvement_suggestions", []) %}
+            <li>{{ s }}</li>
+            {% endfor %}
+        </ol>
+    </div>
+    {% endif %}
+
+    <!-- SKILLS -->
+    {% if result.skills or result.missing_skills %}
+    <div class="card">
+        {% if result.skills %}
+        <h3>✅ Your Relevant Skills</h3>
+        <ul>
+            {% for s in result.get("skills", []) %}
+            <li>{{ s }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% if result.missing_skills %}
+        <h3 style="margin-top:18px;">❌ Missing Skills</h3>
+        <ul>
+            {% for s in result.get("missing_skills", []) %}
+            <li>{{ s }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- ROADMAP -->
     {% if result.roadmap %}
-    <h3>🗺️ Learning Roadmap</h3>
-    <ul>
-        {% for s in result.get("roadmap", []) %}
-        <li>{{ s }}</li>
-        {% endfor %}
-    </ul>
+    <div class="card">
+        <h3>🗺️ Learning Roadmap</h3>
+        <ol class="roadmap-list">
+            {% for s in result.get("roadmap", []) %}
+            <li>{{ s }}</li>
+            {% endfor %}
+        </ol>
+    </div>
     {% endif %}
 
+    <!-- INTERVIEW QUESTIONS -->
     {% if result.interview_questions %}
-    <h3>🎤 Interview Questions</h3>
-    <ul>
-        {% for s in result.get("interview_questions", []) %}
-        <li>{{ s }}</li>
-        {% endfor %}
-    </ul>
+    <div class="card">
+        <h3>🎤 Interview Questions</h3>
+        <ol>
+            {% for s in result.get("interview_questions", []) %}
+            <li>{{ s }}</li>
+            {% endfor %}
+        </ol>
+    </div>
     {% endif %}
+
 </div>
 {% endif %}
 

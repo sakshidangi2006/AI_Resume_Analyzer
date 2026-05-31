@@ -1,6 +1,8 @@
-flask
-sqlalchemy
-pymysql
+Flask
+SQLAlchemy
 PyPDF2
 python-docx
-google-genai
+google-generativeai
+python-dotenv
+pymysql
+gunicorn

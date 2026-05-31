@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="history-header">
+    <h2>📋 Your Analysis History</h2>
+    {% if reports %}
+    <span class="report-count">{{ reports|length }} report{{ 's' if reports|length != 1 }}</span>
+    {% endif %}
+</div>
+
+{% if reports %}
+    {% for r in reports %}
+    <div class="card" id="report-{{ r.id }}">
+
+        <div class="card-top-bar">
+            <p class="resume-preview-label"><strong>Resume Preview</strong></p>
+            <form method="POST" action="/history/delete/{{ r.id }}"
+                  onsubmit="return confirm('Delete this report? This cannot be undone.');">
+                <button type="submit" class="btn-delete">🗑 Delete</button>
+            </form>
+        </div>
+
+        <p class="resume-preview">{{ r.resume_text[:200] }}...</p>
+
+        <hr>
+
+        {% if r.result.error %}
+            <p class="error-msg">⚠️ Error: {{ r.result.error }}</p>
+        {% endif %}
+
+        {% if r.result.skills %}
+        <h3>✅ Relevant Skills</h3>
+        <ul>
+            {% for s in r.result.get("skills", []) %}
+            <li>{{ s }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if r.result.missing_skills %}
+        <h3>❌ Missing Skills</h3>
+        <ul>
+            {% for s in r.result.get("missing_skills", []) %}
+            <li>{{ s }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if r.result.roadmap %}
+        <h3>🗺️ Roadmap</h3>
+        <ul>
+            {% for s in r.result.get("roadmap", []) %}
+            <li>{{ s }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if r.result.interview_questions %}
+        <h3>🎤 Interview Questions</h3>
+        <ul>
+            {% for s in r.result.get("interview_questions", []) %}
+            <li>{{ s }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="card">
+        <p>No analyses yet. <a href="/dashboard">Analyze your first resume!</a></p>
+    </div>
+{% endif %}
+
+{% endblock %}

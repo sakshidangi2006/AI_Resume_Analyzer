@@ -1,0 +1,6 @@
+flask
+sqlalchemy
+pymysql
+PyPDF2
+python-docx
+google-genai

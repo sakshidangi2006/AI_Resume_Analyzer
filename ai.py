@@ -1,6 +1,9 @@
 import os
 import json
 from google import genai
+from dotenv import load_dotenv
+
+load_dotenv("api.env")
 
 # SECURITY FIX: Load API key from environment variable, never hardcode it
 client = genai.Client(

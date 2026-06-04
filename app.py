@@ -4,7 +4,7 @@ import models
 import PyPDF2
 import docx
 import json
-from ai import analyze_resume
+from ai import analyze_resume   
 
 app = Flask(__name__)
 app.secret_key = "secret123"

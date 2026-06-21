@@ -1,3 +1,4 @@
 .venv
 api.env
 __pycache__/
+gunicorn

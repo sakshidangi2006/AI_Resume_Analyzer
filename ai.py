@@ -1,4 +1,6 @@
+import ast
 import os
+import re
 import json
 from google import genai
 from dotenv import load_dotenv
@@ -9,6 +11,38 @@ load_dotenv("api.env")
 client = genai.Client(
     api_key=os.environ.get("GEMINI_API_KEY")
 )
+
+
+def _extract_json_text(content: str) -> str:
+    if content.startswith("```"):
+        parts = content.split("```")
+        if len(parts) >= 2:
+            content = parts[1]
+            if content.lstrip().startswith("json"):
+                content = content[4:]
+
+    start = content.find("{")
+    end = content.rfind("}")
+    if start == -1 or end == -1:
+        raise ValueError("No JSON object found in model response")
+
+    json_text = content[start:end + 1].strip()
+    json_text = re.sub(r",\s*([}\]])", r"\1", json_text)
+    return json_text
+
+
+def _parse_json_text(json_text: str) -> dict:
+    try:
+        return json.loads(json_text)
+    except json.JSONDecodeError as err:
+        try:
+            return ast.literal_eval(json_text)
+        except Exception:
+            raise ValueError(
+                f"Failed to parse JSON response: {err.msg} "
+                f"(line {err.lineno} column {err.colno} char {err.pos})"
+            ) from err
+
 
 def analyze_resume(resume_text: str, user_goal: str, job_description: str = "") -> dict:
     jd_section = f"""
@@ -68,20 +102,8 @@ Resume:
         )
 
         content = response.text.strip()
-
-        # Strip markdown code fences if present
-        if content.startswith("```"):
-            content = content.split("```")[1]
-            if content.startswith("json"):
-                content = content[4:]
-
-        start = content.find("{")
-        end = content.rfind("}")
-
-        if start == -1 or end == -1:
-            raise ValueError("No JSON object found in model response")
-
-        return json.loads(content[start:end + 1])
+        json_text = _extract_json_text(content)
+        return _parse_json_text(json_text)
 
     except Exception as err:
         return {
